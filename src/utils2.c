@@ -2270,6 +2270,8 @@ l_int32  ret;
         remove(realpath);
         LEPT_FREE(realpath);
     }
+#elif (defined WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP) /* windows but not desktop environment */	
+	ret = -1;
 #else
     srcpath = genPathname(dir, srctail);
     LEPT_FREE(dir);
@@ -2376,7 +2378,11 @@ l_int32  ret;
     LEPT_FREE(srctail);
 
         /* Overwrite any existing file at 'newpath' */
+#if WINAPI_FAMILY_APP
+	ret = -1;
+#else
     ret = CopyFile(srcpath, newpath, FALSE) ? 0 : 1;
+#endif
 #endif   /* !_WIN32 */
 
     LEPT_FREE(srcpath);
@@ -2776,8 +2782,12 @@ l_int32  dirlen, namelen, size;
 
         /* Handle the case where we start from the current directory */
     if (!dir || dir[0] == '\0') {
+#if WINAPI_FAMILY_APP
+		return (char *)ERROR_PTR("no current dir found", procName, NULL);
+#else
         if ((cdir = getcwd(NULL, 0)) == NULL)
             return (char *)ERROR_PTR("no current dir found", procName, NULL);
+#endif
     } else {
         cdir = stringNew(dir);
     }
@@ -2814,7 +2824,13 @@ l_int32  dirlen, namelen, size;
 #ifdef _WIN32
         l_int32 tmpdirlen;
         char tmpdir[MAX_PATH];
+#if WINAPI_FAMILY_APP
+		wchar_t tmpdirw[MAX_PATH];
+		GetTempPathW(MAX_PATH, tmpdirw);  /* get the windows temp dir */
+		wcstombs(tmpdir, tmpdirw, MAX_PATH);
+#else
         GetTempPath(sizeof(tmpdir), tmpdir);  /* get the windows temp dir */
+#endif
         tmpdirlen = strlen(tmpdir);
         if (tmpdirlen > 0 && tmpdir[tmpdirlen - 1] == '\\') {
             tmpdir[tmpdirlen - 1] = '\0';  /* trim the trailing '\' */
@@ -2989,6 +3005,8 @@ char  dirname[240];
     close(fd);
     return pattern;
 }
+#elif (defined WINAPI_FAMILY) && (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP) /* windows but not desktop environment */	
+	return (char *)ERROR_PTR("makeTempFilename failed", procName, NULL);
 #else
 {
     char  fname[MAX_PATH];

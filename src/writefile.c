@@ -87,6 +87,14 @@
 #include <string.h>
 #include "allheaders.h"
 
+#if WINAPI_FAMILY_APP
+#include <process.h>
+#endif
+
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#endif
+
     /* Display program (xv, xli, xzgv, open) to be invoked by pixDisplay()  */
 #ifdef _WIN32
 static l_int32  var_DISPLAY_PROG = L_DISPLAY_WITH_IV;  /* default */
@@ -993,7 +1001,9 @@ char            fullpath[_MAX_PATH];
     }
     tempname = genPathname(buffer, NULL);
 
-#ifndef _WIN32
+#if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
+	return 1;
+#elif ! defined( _WIN32 )
 
         /* Unix */
     if (var_DISPLAY_PROG == L_DISPLAY_WITH_XZGV) {
