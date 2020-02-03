@@ -106,7 +106,9 @@
 #include <config_auto.h>
 #endif  /* HAVE_CONFIG_H */
 
-#ifdef _WIN32
+#if WINAPI_FAMILY_APP
+#include <processthreadsapi.h>
+#elif defined (_WIN32)
 #include <windows.h>
 #endif  /* _WIN32 */
 
@@ -146,6 +148,7 @@ char    *envsev;
 
     oldsev = LeptMsgSeverity;
     if (newsev == L_SEVERITY_EXTERNAL) {
+#if !WINAPI_FAMILY_APP		
         envsev = getenv("LEPT_MSG_SEVERITY");
         if (envsev) {
             LeptMsgSeverity = atoi(envsev);
@@ -158,6 +161,7 @@ char    *envsev;
                       "setMsgSeverity");
 #endif  /* DEBUG_SEV */
         }
+#endif		
     } else {
         LeptMsgSeverity = newsev;
 #if DEBUG_SEV
@@ -1144,6 +1148,7 @@ static ULARGE_INTEGER utime_after;
 void
 startTimer(void)
 {
+#if !WINAPI_FAMILY_APP
 HANDLE    this_process;
 FILETIME  start, stop, kernel, user;
 
@@ -1153,11 +1158,15 @@ FILETIME  start, stop, kernel, user;
 
     utime_before.LowPart  = user.dwLowDateTime;
     utime_before.HighPart = user.dwHighDateTime;
+#endif
 }
 
 l_float32
 stopTimer(void)
 {
+#if WINAPI_FAMILY_APP
+	return 0;
+#else
 HANDLE     this_process;
 FILETIME   start, stop, kernel, user;
 ULONGLONG  hnsec;  /* in units of hecto-nanosecond (100 ns) intervals */
@@ -1170,11 +1179,15 @@ ULONGLONG  hnsec;  /* in units of hecto-nanosecond (100 ns) intervals */
     utime_after.HighPart = user.dwHighDateTime;
     hnsec = utime_after.QuadPart - utime_before.QuadPart;
     return (l_float32)(signed)hnsec / 10000000.0;
+#endif
 }
 
 L_TIMER
 startTimerNested(void)
 {
+#if WINAPI_FAMILY_APP
+	return 0;
+#else
 HANDLE           this_process;
 FILETIME         start, stop, kernel, user;
 ULARGE_INTEGER  *utime_start;
@@ -1187,11 +1200,15 @@ ULARGE_INTEGER  *utime_start;
     utime_start->LowPart  = user.dwLowDateTime;
     utime_start->HighPart = user.dwHighDateTime;
     return utime_start;
+#endif
 }
 
 l_float32
 stopTimerNested(L_TIMER  utime_start)
 {
+#if WINAPI_FAMILY_APP
+	return 0;
+#else
 HANDLE          this_process;
 FILETIME        start, stop, kernel, user;
 ULARGE_INTEGER  utime_stop;
@@ -1206,6 +1223,7 @@ ULONGLONG       hnsec;  /* in units of 100 ns intervals */
     hnsec = utime_stop.QuadPart - ((ULARGE_INTEGER *)utime_start)->QuadPart;
     LEPT_FREE(utime_start);
     return (l_float32)(signed)hnsec / 10000000.0;
+#endif
 }
 
 void
