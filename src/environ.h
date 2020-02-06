@@ -102,7 +102,7 @@ typedef uintptr_t l_uintptr_t;
   #define  HAVE_LIBJPEG       1
   #endif
   #if !defined(HAVE_LIBTIFF)
-  #define  HAVE_LIBTIFF       1
+  #define  HAVE_LIBTIFF       0
   #endif
   #if !defined(HAVE_LIBPNG)
   #define  HAVE_LIBPNG        1
