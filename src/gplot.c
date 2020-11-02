@@ -146,6 +146,9 @@
 
 #include <string.h>
 #include "allheaders.h"
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+#endif
 
 #define Bufsize 512  /* hardcoded below in fscanf */
 
@@ -465,6 +468,9 @@ gplotMakeOutputPix(GPLOT  *gplot)
 l_ok
 gplotMakeOutput(GPLOT  *gplot)
 {
+#if WINAPI_FAMILY_APP || TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
+	return ERROR_INT("gplot not defined", procName, 1);
+#else
 char     buf[Bufsize];
 char    *cmdname;
 
@@ -496,6 +502,7 @@ char    *cmdname;
     callSystemDebug(buf);  /* gnuplot || wgnuplot */
     LEPT_FREE(cmdname);
     return 0;
+#endif
 }
 
 
