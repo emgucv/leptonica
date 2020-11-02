@@ -468,7 +468,7 @@ gplotMakeOutputPix(GPLOT  *gplot)
 l_ok
 gplotMakeOutput(GPLOT  *gplot)
 {
-#if WINAPI_FAMILY_APP || TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
+#if defined (WINAPI_FAMILY_APP) || defined (TARGET_IPHONE_SIMULATOR) || defined (TARGET_OS_IPHONE)
 	return ERROR_INT("gplot not defined", procName, 1);
 #else
 char     buf[Bufsize];

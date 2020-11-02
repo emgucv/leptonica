@@ -92,7 +92,7 @@
 #include <string.h>
 #include "allheaders.h"
 
-#if WINAPI_FAMILY_APP
+#ifdef WINAPI_FAMILY_APP
 #include <process.h>
 #endif
 
@@ -1016,7 +1016,7 @@ char            fullpath[_MAX_PATH];
     }
     tempname = genPathname(buffer, NULL);
 
-#if TARGET_IPHONE_SIMULATOR || TARGET_OS_IPHONE
+#if defined (TARGET_IPHONE_SIMULATOR) || defined (TARGET_OS_IPHONE)
 	return 1;
 #elif ! defined( _WIN32 )
 

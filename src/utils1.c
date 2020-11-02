@@ -106,7 +106,7 @@
 #include <config_auto.h>
 #endif  /* HAVE_CONFIG_H */
 
-#if WINAPI_FAMILY_APP
+#if defined (WINAPI_FAMILY_APP)
 #include <processthreadsapi.h>
 #elif defined (_WIN32)
 #include <windows.h>
@@ -148,7 +148,7 @@ char    *envsev;
 
     oldsev = LeptMsgSeverity;
     if (newsev == L_SEVERITY_EXTERNAL) {
-#if !WINAPI_FAMILY_APP		
+#if ! defined (WINAPI_FAMILY_APP)
         envsev = getenv("LEPT_MSG_SEVERITY");
         if (envsev) {
             LeptMsgSeverity = atoi(envsev);
@@ -161,7 +161,7 @@ char    *envsev;
                       "setMsgSeverity");
 #endif  /* DEBUG_SEV */
         }
-#endif		
+#endif
     } else {
         LeptMsgSeverity = newsev;
 #if DEBUG_SEV
@@ -1145,7 +1145,7 @@ static ULARGE_INTEGER utime_after;
 void
 startTimer(void)
 {
-#if !WINAPI_FAMILY_APP
+#if ! defined (WINAPI_FAMILY_APP)
 HANDLE    this_process;
 FILETIME  start, stop, kernel, user;
 
@@ -1161,7 +1161,7 @@ FILETIME  start, stop, kernel, user;
 l_float32
 stopTimer(void)
 {
-#if WINAPI_FAMILY_APP
+#ifdef WINAPI_FAMILY_APP
 	return 0;
 #else
 HANDLE     this_process;
@@ -1182,7 +1182,7 @@ ULONGLONG  hnsec;  /* in units of hecto-nanosecond (100 ns) intervals */
 L_TIMER
 startTimerNested(void)
 {
-#if WINAPI_FAMILY_APP
+#ifdef WINAPI_FAMILY_APP
 	return 0;
 #else
 HANDLE           this_process;
@@ -1203,7 +1203,7 @@ ULARGE_INTEGER  *utime_start;
 l_float32
 stopTimerNested(L_TIMER  utime_start)
 {
-#if WINAPI_FAMILY_APP
+#ifdef WINAPI_FAMILY_APP
 	return 0;
 #else
 HANDLE          this_process;
